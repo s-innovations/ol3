@@ -18,7 +18,7 @@ goog.require('ol.tilegrid.TileGrid');
  * @param {ol.tilegrid.TileGrid} tileGrid Tile grid.
  * @private
  */
-ol.CanvasTile_ = function(tileCoord, tileGrid) {
+ol.CanvasTile_ = function(tileCoord, tileGrid, canvasFunction) {
 
   goog.base(this, tileCoord, ol.TileState.LOADED);
 
@@ -33,6 +33,12 @@ ol.CanvasTile_ = function(tileCoord, tileGrid) {
    * @type {Object.<number, HTMLCanvasElement>}
    */
   this.canvasByContext_ = {};
+
+   /**
+   * @private
+   * @type {ol.CanvasFunctionType}
+   */
+  this.canvasFunction_ = canvasFunction;
 
 };
 goog.inherits(ol.CanvasTile_, ol.Tile);
@@ -50,15 +56,7 @@ ol.CanvasTile_.prototype.getImage = function(opt_context) {
     var tileSize = this.tileSize_;
     var context = ol.dom.createCanvasContext2D(tileSize, tileSize);
 
-    context.strokeStyle = 'black';
-    context.strokeRect(0.5, 0.5, tileSize + 0.5, tileSize + 0.5);
-
-    context.fillStyle = 'black';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.font = '24px sans-serif';
-    context.fillText(ol.tilecoord.toString(this.tileCoord),
-        tileSize / 2, tileSize / 2);
+    this.canvasFunction_(context,this.getTileCoord());
 
     this.canvasByContext_[key] = context.canvas;
     return context.canvas;
@@ -95,6 +93,12 @@ ol.source.TileCanvas = function(options) {
    */
   this.tileCache_ = new ol.TileCache();
 
+   /**
+   * @private
+   * @type {ol.CanvasFunctionType}
+   */
+  this.canvasFunction_ = options.canvasFunction;
+
 };
 goog.inherits(ol.source.TileCanvas, ol.source.Tile);
 
@@ -121,9 +125,9 @@ ol.source.TileCanvas.prototype.expireCache = function(usedTiles) {
 ol.source.TileCanvas.prototype.getTile = function(z, x, y) {
   var tileCoordKey = this.getKeyZXY(z, x, y);
   if (this.tileCache_.containsKey(tileCoordKey)) {
-    return /** @type {!ol.DebugTile_} */ (this.tileCache_.get(tileCoordKey));
+    return /** @type {!ol.CanvasTile_} */ (this.tileCache_.get(tileCoordKey));
   } else {
-    var tile = new ol.CanvasTile_([z, x, y], this.tileGrid);
+    var tile = new ol.CanvasTile_([z, x, y], this.tileGrid, this.canvasFunction_);
     this.tileCache_.set(tileCoordKey, tile);
     return tile;
   }
