@@ -8,7 +8,7 @@
       "externs/closure-compiler.js",
       "externs/example.js",
       "externs/geojson.js",
-      "externs/jquery-1.7.js",
+      "externs/jquery-1.9.js",
       "externs/oli.js",
       "externs/olx.js",
       "externs/proj4js.js",
@@ -62,7 +62,7 @@
       "api", "observable"
     ],
     "compilation_level": "ADVANCED",
-    "output_wrapper": "// OpenLayers 3. See http://ol3.js.org/\n(function(){%output%})();",
+    "output_wrapper": "// OpenLayers 3. See http://ol3js.org/\n(function(){%output%})();",
     "use_types_for_optimization": true,
     "manage_closure_dependencies": true
 

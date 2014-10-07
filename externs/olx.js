@@ -595,6 +595,13 @@ olx.ViewOptions.prototype.zoomFactor;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.animation;
+
+
+/**
  * @typedef {{resolution: number,
  *     start: (number|undefined),
  *     duration: (number|undefined),
@@ -777,6 +784,13 @@ olx.animation.ZoomOptions.prototype.duration;
  * @api
  */
 olx.animation.ZoomOptions.prototype.easing;
+
+
+/**
+ * Namespace.
+ * @type {Object}
+ */
+olx.control;
 
 
 /**
@@ -1280,6 +1294,13 @@ olx.control.ZoomToExtentOptions.prototype.extent;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.format;
+
+
+/**
  * @typedef {{dataProjection: (ol.proj.ProjectionLike|undefined),
  *     featureProjection: (ol.proj.ProjectionLike|undefined)}}
  * @api
@@ -1743,6 +1764,13 @@ olx.format.WKTOptions.prototype.splitCollection;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.interaction;
+
+
+/**
  * Interactions for the map. Default is `true` for all options.
  * @typedef {{altShiftDragRotate: (boolean|undefined),
  *     doubleClickZoom: (boolean|undefined),
@@ -1865,7 +1893,7 @@ olx.interaction.DoubleClickZoomOptions.prototype.delta;
 
 /**
  * @typedef {{formatConstructors: (Array.<function(new: ol.format.Feature)>|undefined),
- *     reprojectTo: ol.proj.ProjectionLike}}
+ *     projection: ol.proj.ProjectionLike}}
  * @api
  */
 olx.interaction.DragAndDropOptions;
@@ -1884,7 +1912,7 @@ olx.interaction.DragAndDropOptions.prototype.formatConstructors;
  * @type {ol.proj.ProjectionLike}
  * @api
  */
-olx.interaction.DragAndDropOptions.prototype.reprojectTo;
+olx.interaction.DragAndDropOptions.prototype.projection;
 
 
 /**
@@ -2305,6 +2333,13 @@ olx.interaction.SelectOptions.prototype.removeCondition;
  * @api
  */
 olx.interaction.SelectOptions.prototype.toggleCondition;
+
+
+/**
+ * Namespace.
+ * @type {Object}
+ */
+olx.layer;
 
 
 /**
@@ -3098,9 +3133,17 @@ olx.FeatureOverlayOptions.prototype.style;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.source;
+
+
+/**
  * @typedef {{culture: (string|undefined),
  *     key: string,
  *     imagerySet: string,
+ *     maxZoom: (number|undefined),
  *     tileLoadFunction: (ol.TileLoadFunctionType|undefined)}}
  * @api
  */
@@ -3129,6 +3172,15 @@ olx.source.BingMapsOptions.prototype.key;
  * @api stable
  */
 olx.source.BingMapsOptions.prototype.imagerySet;
+
+
+/**
+ * Max zoom. Default is what's advertized by the BingMaps service (`21`
+ * currently).
+ * @type {number|undefined}
+ * @api
+ */
+olx.source.BingMapsOptions.prototype.maxZoom;
 
 
 /**
@@ -3521,10 +3573,8 @@ olx.source.TileImageOptions.prototype.tileUrlFunction;
 
 /**
  * @typedef {{attributions: (Array.<ol.Attribution>|undefined),
- *     defaultProjection: ol.proj.ProjectionLike,
  *     format: ol.format.Feature,
  *     logo: (string|olx.LogoOptions|undefined),
- *     object: (GeoJSONObject|undefined),
  *     projection: ol.proj.ProjectionLike,
  *     tileGrid: ol.tilegrid.TileGrid,
  *     tileUrlFunction: (ol.TileUrlFunctionType|undefined),
@@ -3544,14 +3594,6 @@ olx.source.TileVectorOptions.prototype.attributions;
 
 
 /**
- * Default projection.
- * @type {ol.proj.ProjectionLike}
- * @api
- */
-olx.source.TileVectorOptions.prototype.defaultProjection;
-
-
-/**
  * Format.
  * @type {ol.format.Feature}
  * @api
@@ -3565,14 +3607,6 @@ olx.source.TileVectorOptions.prototype.format;
  * @api
  */
 olx.source.TileVectorOptions.prototype.logo;
-
-
-/**
- * Object.
- * @type {GeoJSONObject|undefined}
- * @api
- */
-olx.source.TileVectorOptions.prototype.object;
 
 
 /**
@@ -4032,7 +4066,6 @@ olx.source.OSMOptions.prototype.url;
  *     logo: (string|olx.LogoOptions|undefined),
  *     node: (Node|undefined),
  *     projection: ol.proj.ProjectionLike,
- *     reprojectTo: ol.proj.ProjectionLike,
  *     text: (string|undefined),
  *     url: (string|undefined),
  *     urls: (Array.<string>|undefined)}}
@@ -4079,14 +4112,6 @@ olx.source.OSMXMLOptions.prototype.node;
  * @api
  */
 olx.source.OSMXMLOptions.prototype.projection;
-
-
-/**
- * Re-project to.
- * @type {ol.proj.ProjectionLike}
- * @api
- */
-olx.source.OSMXMLOptions.prototype.reprojectTo;
 
 
 /**
@@ -5232,6 +5257,13 @@ olx.source.ZoomifyOptions.prototype.size;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.style;
+
+
+/**
  * @typedef {{fill: (ol.style.Fill|undefined),
  *     radius: number,
  *     snapToPixel: (boolean|undefined),
@@ -5653,6 +5685,13 @@ olx.style.StyleOptions.prototype.zIndex;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.tilegrid;
+
+
+/**
  * @typedef {{minZoom: (number|undefined),
  *     origin: (ol.Coordinate|undefined),
  *     origins: (Array.<ol.Coordinate>|undefined),
@@ -5838,13 +5877,20 @@ olx.tilegrid.ZoomifyOptions.prototype.resolutions;
 
 
 /**
+ * Namespace.
+ * @type {Object}
+ */
+olx.view;
+
+
+/**
  * @typedef {{padding: !Array.<number>,
  *     constrainResolution: (boolean|undefined),
  *     nearest: (boolean|undefined),
  *     minResolution: (number|undefined)}}
  * @api
  */
-olx.View.fitGeometryOptions;
+olx.view.FitGeometryOptions;
 
 
 /**
@@ -5853,7 +5899,7 @@ olx.View.fitGeometryOptions;
  * @type {!Array.<number>}
  * @api
  */
-olx.View.fitGeometryOptions.prototype.padding;
+olx.view.FitGeometryOptions.prototype.padding;
 
 
 /**
@@ -5861,7 +5907,7 @@ olx.View.fitGeometryOptions.prototype.padding;
  * @type {boolean|undefined}
  * @api
  */
-olx.View.fitGeometryOptions.prototype.constrainResolution;
+olx.view.FitGeometryOptions.prototype.constrainResolution;
 
 
 /**
@@ -5869,7 +5915,7 @@ olx.View.fitGeometryOptions.prototype.constrainResolution;
  * @type {boolean|undefined}
  * @api
  */
-olx.View.fitGeometryOptions.prototype.nearest;
+olx.view.FitGeometryOptions.prototype.nearest;
 
 
 /**
@@ -5877,7 +5923,7 @@ olx.View.fitGeometryOptions.prototype.nearest;
  * @type {number|undefined}
  * @api
  */
-olx.View.fitGeometryOptions.prototype.minResolution;
+olx.view.FitGeometryOptions.prototype.minResolution;
 
 
 /**
@@ -5886,7 +5932,7 @@ olx.View.fitGeometryOptions.prototype.minResolution;
  * @type {number|undefined}
  * @api
  */
-olx.View.fitGeometryOptions.prototype.maxZoom;
+olx.view.FitGeometryOptions.prototype.maxZoom;
 
 
 /* typedefs for object literals exposed by the library */
