@@ -49,6 +49,7 @@ function assertValidConfig(config, callback) {
 }
 
 
+
 /**
  * Read the build configuration file.
  * @param {string} configPath Path to config file.

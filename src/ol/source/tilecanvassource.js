@@ -1,4 +1,5 @@
 goog.provide('ol.source.TileCanvas');
+goog.provide('ol.TileCanvasFunctionType');
 
 goog.require('ol.Tile');
 goog.require('ol.TileCache');
@@ -11,11 +12,27 @@ goog.require('ol.tilegrid.TileGrid');
 
 
 
+
+/**
+ * A function filling the canvas element (`{HTMLCanvasElement}`)
+ * used by the source as an image. The arguments passed to the function are:
+ * {@link ol.Extent} the image extent, `{number}` the image resolution,
+ * `{number}` the device pixel ratio, {@link ol.Size} the image size, and
+ * {@link ol.proj.Projection} the image projection. The canvas returned by
+ * this function is cached by the source. The this keyword inside the function
+ * references the {@link ol.source.ImageCanvas}.
+ *
+ * @typedef {function(this:ol.source.TileCanvas, CanvasRenderingContext2D, ol.Extent, ol.TileCoord, number,number)}
+ * @api
+ */
+ol.TileCanvasFunctionType;
+
 /**
  * @constructor
  * @extends {ol.Tile}
  * @param {ol.TileCoord} tileCoord Tile coordinate.
  * @param {ol.tilegrid.TileGrid} tileGrid Tile grid.
+ * @param {ol.TileCanvasFunctionType} canvasFunction Canvas Drawing Function
  * @private
  */
 ol.CanvasTile_ = function(tileCoord, tileGrid, canvasFunction) {
@@ -30,13 +47,20 @@ ol.CanvasTile_ = function(tileCoord, tileGrid, canvasFunction) {
 
   /**
    * @private
+   * @type {ol.tilegrid.TileGrid}
+   */
+  this.tileGrid_ = tileGrid;
+
+  /**
+   * @private
    * @type {Object.<number, HTMLCanvasElement>}
    */
   this.canvasByContext_ = {};
 
+  this.coordTransform_ = this.tileGrid_.createTileCoordTransform();
    /**
    * @private
-   * @type {ol.CanvasFunctionType}
+   * @type {ol.TileCanvasFunctionType}
    */
   this.canvasFunction_ = canvasFunction;
 
@@ -55,8 +79,13 @@ ol.CanvasTile_.prototype.getImage = function(opt_context) {
 
     var tileSize = this.tileSize_;
     var context = ol.dom.createCanvasContext2D(tileSize, tileSize);
-
-    this.canvasFunction_(context,this.getTileCoord());
+    var coord =  this.getTileCoord();
+    
+    this.canvasFunction_(context,
+      this.tileGrid_.getTileCoordExtent(coord),
+      this.coordTransform_(coord,null),
+      this.tileGrid_.getTileCoordResolution(coord),
+      tileSize);
 
     this.canvasByContext_[key] = context.canvas;
     return context.canvas;
@@ -95,7 +124,7 @@ ol.source.TileCanvas = function(options) {
 
    /**
    * @private
-   * @type {ol.CanvasFunctionType}
+   * @type {ol.TileCanvasFunctionType}
    */
   this.canvasFunction_ = options.canvasFunction;
 

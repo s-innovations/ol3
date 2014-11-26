@@ -9,6 +9,14 @@ goog.require('ol.source.State');
 goog.require('ol.tilegrid.TileGrid');
 
 
+/**
+ * A function that sets the id of the feature.
+ *
+ * @typedef {function(ol.Feature): (undefined)}
+ * @api
+ */
+ol.FeatureIdFunction;
+
 
 /**
  * @classdesc
@@ -28,6 +36,19 @@ ol.source.TileVector = function(options) {
     logo: options.logo,
     projection: options.projection
   });
+
+
+  /**
+   * @private
+   * @type {ol.FeatureIdFunction|undefined}
+   */
+  this.idFunction_ = options.idFunction;
+
+  /**
+   * @private
+   * @type {number}
+   */
+  this.maxZoomAdded_ = 0;
 
   /**
    * @private
@@ -96,6 +117,18 @@ ol.source.TileVector.prototype.forEachFeature = goog.abstractMethod;
  */
 ol.source.TileVector.prototype.forEachFeatureInExtent = goog.abstractMethod;
 
+//function(extent, f, opt_this) {
+//
+//  var zz = this.tileGrid_.getMinZoom ()
+//  for(var z = this.maxZoomAdded_; z>=zz;z--)
+//  {
+//    var result = this.forEachFeatureInExtentAtResolution(extent,this.tileGrid_.getResolution(z),f,opt_this);
+//    if (result) {
+//      return result;
+//    }
+//  }
+//  return undefined;
+//};
 
 /**
  * @inheritDoc
@@ -107,13 +140,26 @@ ol.source.TileVector.prototype.forEachFeatureInExtentAtResolution =
   var z = tileGrid.getZForResolution(resolution);
   var tileRange = tileGrid.getTileRangeForExtentAndZ(extent, z);
   var x, y;
+  var noDuplicates = {};
   for (x = tileRange.minX; x <= tileRange.maxX; ++x) {
     for (y = tileRange.minY; y <= tileRange.maxY; ++y) {
       var tileKey = this.getTileKeyZXY_(z, x, y);
       var features = tiles[tileKey];
       if (goog.isDef(features)) {
         var i, ii;
+        
         for (i = 0, ii = features.length; i < ii; ++i) {
+          var feature = features[i];
+          var id = feature.getId();
+
+          if(goog.isDef(id)){
+          
+            if(goog.isDef(noDuplicates[id.toString()])){
+              continue;
+            }
+            noDuplicates[id.toString()] = true;
+          }
+          
           var result = f.call(opt_this, features[i]);
           if (result) {
             return result;
@@ -180,7 +226,12 @@ ol.source.TileVector.prototype.loadFeatures =
   var tileGrid = this.tileGrid_;
   var tileUrlFunction = this.tileUrlFunction_;
   var tiles = this.tiles_;
+  var idFunc = this.idFunction_;
   var z = tileGrid.getZForResolution(resolution);
+
+  if(z>this.maxZoomAdded_){
+    this.maxZoomAdded_ = z;
+  }
   var tileRange = tileGrid.getTileRangeForExtentAndZ(extent, z);
   var tileCoord = [z, 0, 0];
   var x, y;
@@ -195,6 +246,7 @@ ol.source.TileVector.prototype.loadFeatures =
         var url = tileUrlFunction(tileCoord, 1, projection);
         if (goog.isDef(url)) {
           tiles[tileKey] = [];
+
           this.loadFeaturesFromURL(url, goog.partial(
               /**
                * @param {string} tileKey Tile key.
@@ -203,6 +255,21 @@ ol.source.TileVector.prototype.loadFeatures =
                */
               function(tileKey, features) {
                 tiles[tileKey] = features;
+                //var addTobase = [];
+                
+                var i, ii;
+                for (i = 0, ii = features.length; i < ii; ++i) {
+                  var feature = features[i];
+                  if(goog.isDef(idFunc))
+                  {
+                    idFunc(feature);
+                  }
+
+                  this.dispatchEvent(
+                    new ol.source.VectorEvent(ol.source.VectorEventType.ADDFEATURE, feature));
+                }
+                
+               
                 this.setState(ol.source.State.READY);
               }, tileKey), this);
         }

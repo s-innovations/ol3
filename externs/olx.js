@@ -3571,6 +3571,8 @@ olx.source.TileImageOptions.prototype.tilePixelRatio;
 olx.source.TileImageOptions.prototype.tileUrlFunction;
 
 
+
+
 /**
  * @typedef {{attributions: (Array.<ol.Attribution>|undefined),
  *     format: ol.format.Feature,
@@ -3579,7 +3581,8 @@ olx.source.TileImageOptions.prototype.tileUrlFunction;
  *     tileGrid: ol.tilegrid.TileGrid,
  *     tileUrlFunction: (ol.TileUrlFunctionType|undefined),
  *     url: (string|undefined),
- *     urls: (Array.<string>|undefined)}}
+ *     urls: (Array.<string>|undefined),
+ *     idFunction: (ol.FeatureIdFunction|undefined)}}
  * @api
  */
 olx.source.TileVectorOptions;
@@ -3634,6 +3637,12 @@ olx.source.TileVectorOptions.prototype.tileGrid;
  */
 olx.source.TileVectorOptions.prototype.tileUrlFunction;
 
+/**
+ * Optional function to set id of feature when added. * 
+ * @type {ol.FeatureIdFunction|undefined}
+ * @api
+ */
+olx.source.TileVectorOptions.prototype.idFunction;
 
 /**
  * URL template. Must include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.

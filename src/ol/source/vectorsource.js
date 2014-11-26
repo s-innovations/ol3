@@ -211,6 +211,7 @@ ol.source.Vector.prototype.forEachFeature = function(f, opt_this) {
  * @param {T=} opt_this The object to use as `this` in `f`.
  * @return {S|undefined}
  * @template T,S
+ * @api
  */
 ol.source.Vector.prototype.forEachFeatureAtCoordinate =
     function(coordinate, f, opt_this) {
