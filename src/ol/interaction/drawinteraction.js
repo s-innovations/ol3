@@ -2,6 +2,7 @@ goog.provide('ol.DrawEvent');
 goog.provide('ol.interaction.Draw');
 
 goog.require('goog.asserts');
+goog.require('goog.events');
 goog.require('goog.events.Event');
 goog.require('ol.Collection');
 goog.require('ol.Coordinate');
@@ -10,6 +11,7 @@ goog.require('ol.FeatureOverlay');
 goog.require('ol.Map');
 goog.require('ol.MapBrowserEvent');
 goog.require('ol.MapBrowserEvent.EventType');
+goog.require('ol.Object');
 goog.require('ol.events.condition');
 goog.require('ol.geom.GeometryType');
 goog.require('ol.geom.LineString');
@@ -18,6 +20,7 @@ goog.require('ol.geom.MultiPoint');
 goog.require('ol.geom.MultiPolygon');
 goog.require('ol.geom.Point');
 goog.require('ol.geom.Polygon');
+goog.require('ol.interaction.InteractionProperty');
 goog.require('ol.interaction.Pointer');
 goog.require('ol.source.Vector');
 goog.require('ol.style.Style');
@@ -204,6 +207,10 @@ ol.interaction.Draw = function(options) {
   this.condition_ = goog.isDef(options.condition) ?
       options.condition : ol.events.condition.noModifierKeys;
 
+  goog.events.listen(this,
+      ol.Object.getChangeEventType(ol.interaction.InteractionProperty.ACTIVE),
+      this.updateState_, false, this);
+
 };
 goog.inherits(ol.interaction.Draw, ol.interaction.Pointer);
 
@@ -223,12 +230,8 @@ ol.interaction.Draw.getDefaultStyleFunction = function() {
  * @inheritDoc
  */
 ol.interaction.Draw.prototype.setMap = function(map) {
-  if (goog.isNull(map)) {
-    // removing from a map, clean up
-    this.abortDrawing_();
-  }
-  this.overlay_.setMap(map);
   goog.base(this, 'setMap', map);
+  this.updateState_();
 };
 
 
@@ -283,7 +286,7 @@ ol.interaction.Draw.prototype.handlePointerUp = function(event) {
       this.startDrawing_(event);
     } else if (this.mode_ === ol.interaction.DrawMode.POINT ||
         this.atFinish_(event)) {
-      this.finishDrawing_(event);
+      this.finishDrawing();
     } else {
       this.addToDrawing_(event);
     }
@@ -478,10 +481,9 @@ ol.interaction.Draw.prototype.addToDrawing_ = function(event) {
 
 /**
  * Stop drawing and add the sketch feature to the target layer.
- * @param {ol.MapBrowserEvent} event Event.
- * @private
+ * @api
  */
-ol.interaction.Draw.prototype.finishDrawing_ = function(event) {
+ol.interaction.Draw.prototype.finishDrawing = function() {
   var sketchFeature = this.abortDrawing_();
   goog.asserts.assert(!goog.isNull(sketchFeature));
   var coordinates;
@@ -559,6 +561,19 @@ ol.interaction.Draw.prototype.updateSketchFeatures_ = function() {
     sketchFeatures.push(this.sketchPoint_);
   }
   this.overlay_.setFeatures(new ol.Collection(sketchFeatures));
+};
+
+
+/**
+ * @private
+ */
+ol.interaction.Draw.prototype.updateState_ = function() {
+  var map = this.getMap();
+  var active = this.getActive();
+  if (goog.isNull(map) || !active) {
+    this.abortDrawing_();
+  }
+  this.overlay_.setMap(active ? map : null);
 };
 
 
