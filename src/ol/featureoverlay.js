@@ -78,7 +78,7 @@ ol.FeatureOverlay = function(opt_options) {
 
   if (goog.isDef(options.features)) {
     if (goog.isArray(options.features)) {
-      this.setFeatures(new ol.Collection(goog.array.clone(options.features)));
+      this.setFeatures(new ol.Collection(options.features.slice()));
     } else {
       goog.asserts.assertInstanceof(options.features, ol.Collection);
       this.setFeatures(options.features);
@@ -109,6 +109,15 @@ ol.FeatureOverlay.prototype.addFeature = function(feature) {
  */
 ol.FeatureOverlay.prototype.getFeatures = function() {
   return this.features_;
+};
+
+
+/**
+ * @return {?ol.Map} The map with which this feature overlay is associated.
+ * @api
+ */
+ol.FeatureOverlay.prototype.getMap = function() {
+  return this.map_;
 };
 
 
@@ -191,7 +200,7 @@ ol.FeatureOverlay.prototype.handleMapPostCompose_ = function(event) {
     ii = styles.length;
     for (i = 0; i < ii; ++i) {
       ol.renderer.vector.renderFeature(replayGroup, feature, styles[i],
-          squaredTolerance, feature, this.handleImageChange_, this);
+          squaredTolerance, this.handleImageChange_, this);
     }
   }, this);
 };

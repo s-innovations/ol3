@@ -5,18 +5,14 @@ goog.provide('ol.renderer.canvas.TileLayer');
 
 goog.require('goog.array');
 goog.require('goog.asserts');
-goog.require('goog.events');
 goog.require('goog.object');
 goog.require('goog.vec.Mat4');
-goog.require('ol.Object');
 goog.require('ol.Size');
 goog.require('ol.TileRange');
 goog.require('ol.TileState');
 goog.require('ol.dom');
 goog.require('ol.extent');
-goog.require('ol.layer.LayerProperty');
 goog.require('ol.layer.Tile');
-goog.require('ol.renderer.Map');
 goog.require('ol.renderer.canvas.Layer');
 goog.require('ol.tilecoord');
 goog.require('ol.vec.Mat4');
@@ -26,12 +22,11 @@ goog.require('ol.vec.Mat4');
 /**
  * @constructor
  * @extends {ol.renderer.canvas.Layer}
- * @param {ol.renderer.Map} mapRenderer Map renderer.
  * @param {ol.layer.Tile} tileLayer Tile layer.
  */
-ol.renderer.canvas.TileLayer = function(mapRenderer, tileLayer) {
+ol.renderer.canvas.TileLayer = function(tileLayer) {
 
-  goog.base(this, mapRenderer, tileLayer);
+  goog.base(this, tileLayer);
 
   /**
    * @private
@@ -65,9 +60,21 @@ ol.renderer.canvas.TileLayer = function(mapRenderer, tileLayer) {
 
   /**
    * @private
+   * @type {?goog.vec.Mat4.Number}
+   */
+  this.imageTransformInv_ = null;
+
+  /**
+   * @private
    * @type {number}
    */
   this.renderedCanvasZ_ = NaN;
+
+  /**
+   * @private
+   * @type {number}
+   */
+  this.renderedTileSize_ = NaN;
 
   /**
    * @private
@@ -81,30 +88,8 @@ ol.renderer.canvas.TileLayer = function(mapRenderer, tileLayer) {
    */
   this.renderedTiles_ = null;
 
-  /**
-   * @private
-   * @type {Array.<goog.events.Key>}
-   */
-  this.eventKeys_ = [
-    goog.events.listen(
-        tileLayer, ol.Object.getChangeEventType(ol.layer.LayerProperty.EXTENT),
-        this.handleLayerExtentChanged_, false, this)
-  ];
-
 };
 goog.inherits(ol.renderer.canvas.TileLayer, ol.renderer.canvas.Layer);
-
-
-/**
- * @inheritDoc
- */
-ol.renderer.canvas.TileLayer.prototype.disposeInternal = function() {
-  for (var i = 0, ii = this.eventKeys_.length; i < ii; ++i) {
-    goog.events.unlistenByKey(this.eventKeys_[i]);
-  }
-  this.eventKeys_.length = 0;
-  goog.base(this, 'disposeInternal');
-};
 
 
 /**
@@ -120,19 +105,6 @@ ol.renderer.canvas.TileLayer.prototype.getImage = function() {
  */
 ol.renderer.canvas.TileLayer.prototype.getImageTransform = function() {
   return this.imageTransform_;
-};
-
-
-/**
- * Handle layer extent changes.  We clear the canvas any time the layer extent
- * changes.
- * @private
- */
-ol.renderer.canvas.TileLayer.prototype.handleLayerExtentChanged_ = function() {
-  if (!goog.isNull(this.context_)) {
-    this.context_.clearRect(0, 0, this.canvasSize_[0], this.canvasSize_[1]);
-    this.renderedCanvasZ_ = NaN;
-  }
 };
 
 
@@ -262,9 +234,11 @@ ol.renderer.canvas.TileLayer.prototype.prepareFrame =
     context = this.context_;
     if (this.canvasSize_[0] < canvasWidth ||
         this.canvasSize_[1] < canvasHeight ||
+        this.renderedTileSize_ !== tilePixelSize ||
         (this.canvasTooBig_ && (this.canvasSize_[0] > canvasWidth ||
         this.canvasSize_[1] > canvasHeight))) {
-      // Canvas is too small, resize it. We never shrink the canvas, unless
+      // Canvas is too small or tileSize has changed, resize it.
+      // We never shrink the canvas, unless
       // we know that the current canvas size exceeds the maximum size
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
@@ -278,11 +252,6 @@ ol.renderer.canvas.TileLayer.prototype.prepareFrame =
       if (z != this.renderedCanvasZ_ ||
           !this.renderedCanvasTileRange_.containsTileRange(tileRange)) {
         this.renderedCanvasTileRange_ = null;
-        // Due to limited layer extent, we may be rendering tiles on a small
-        // portion of the canvas.
-        if (z < this.renderedCanvasZ_) {
-          this.context_.clearRect(0, 0, canvasWidth, canvasHeight);
-        }
       }
     }
   }
@@ -296,6 +265,7 @@ ol.renderer.canvas.TileLayer.prototype.prepareFrame =
     minY = tileRange.minY -
         Math.floor((canvasTileRangeHeight - tileRange.getHeight()) / 2);
     this.renderedCanvasZ_ = z;
+    this.renderedTileSize_ = tilePixelSize;
     this.renderedCanvasTileRange_ = new ol.TileRange(
         minX, minX + canvasTileRangeWidth - 1,
         minY, minY + canvasTileRangeHeight - 1);
@@ -317,16 +287,9 @@ ol.renderer.canvas.TileLayer.prototype.prepareFrame =
   /** @type {Array.<ol.Tile>} */
   var tilesToClear = [];
 
-  var getTileIfLoaded = this.createGetTileIfLoadedFunction(function(tile) {
-    return !goog.isNull(tile) && tile.getState() == ol.TileState.LOADED;
-  }, tileSource, pixelRatio, projection);
-  var findLoadedTiles = goog.bind(tileSource.findLoadedTiles, tileSource,
-      tilesToDrawByZ, getTileIfLoaded);
+  var findLoadedTiles = this.createLoadedTileFinder(tileSource, tilesToDrawByZ);
 
   var useInterimTilesOnError = tileLayer.getUseInterimTilesOnError();
-  if (!goog.isDef(useInterimTilesOnError)) {
-    useInterimTilesOnError = true;
-  }
 
   var tmpExtent = ol.extent.createEmpty();
   var tmpTileRange = new ol.TileRange(0, 0, 0, 0);
@@ -454,6 +417,35 @@ ol.renderer.canvas.TileLayer.prototype.prepareFrame =
       viewState.rotation,
       (origin[0] - center[0]) / tilePixelResolution,
       (center[1] - origin[1]) / tilePixelResolution);
+  this.imageTransformInv_ = null;
 
   return true;
+};
+
+
+/**
+ * @inheritDoc
+ */
+ol.renderer.canvas.TileLayer.prototype.forEachLayerAtPixel =
+    function(pixel, frameState, callback, thisArg) {
+  if (goog.isNull(this.context_)) {
+    return undefined;
+  }
+
+  if (goog.isNull(this.imageTransformInv_)) {
+    this.imageTransformInv_ = goog.vec.Mat4.createNumber();
+    goog.vec.Mat4.invert(this.imageTransform_, this.imageTransformInv_);
+  }
+
+  var pixelOnCanvas =
+      this.getPixelOnCanvas(pixel, this.imageTransformInv_);
+
+  var imageData = this.context_.getImageData(
+      pixelOnCanvas[0], pixelOnCanvas[1], 1, 1).data;
+
+  if (imageData[3] > 0) {
+    return callback.call(thisArg, this.getLayer());
+  } else {
+    return undefined;
+  }
 };
