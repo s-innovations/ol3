@@ -32,11 +32,7 @@ class ThreadPool:
                 try:
                     function(*args, **kargs)
                 except:
-                    print("ERROR")
-                    for count, thing in enumerate(args):
-                        print '{0}. {1}'.format(count, thing)
                     print(sys.exc_info()[0])
-                    print("ERROR")
                     self.tasks.errors = True
                 self.tasks.task_done()
 
@@ -172,8 +168,7 @@ virtual('ci', 'lint', 'build', 'test',
     'build/examples/all.combined.js', 'check-examples', 'apidoc')
 
 
-virtual('build', 'build/ol.css', 'build/ol.js', 'build/ol-debug.js',
-    'build/ol.js.map')
+virtual('build', 'build/ol.css', 'build/ol.js', 'build/ol-debug.js')
 
 
 virtual('check', 'lint', 'build/ol.js', 'test')
@@ -193,19 +188,10 @@ def build_ol_css(t):
     t.output('%(CLEANCSS)s', 'css/ol.css')
 
 
-def _build_js(t):
-    t.run('node', 'tasks/build.js', 'config/ol.json', 'build/ol.js')
-
-
 @target('build/ol.js', SRC, SHADER_SRC, 'config/ol.json', NPM_INSTALL)
-def build_ol_js(t):
-    _build_js(t)
+def build_ol_new_js(t):
+    t.run('node', 'tasks/build.js', 'config/ol.json', 'build/ol.js')
     report_sizes(t)
-
-
-@target('build/ol.js.map', SRC, SHADER_SRC, 'config/ol.json', NPM_INSTALL)
-def build_ol_js_map(t):
-    _build_js(t)
 
 
 @target('build/ol-debug.js', SRC, SHADER_SRC, 'config/ol-debug.json',
@@ -804,7 +790,7 @@ Other less frequently used targets are:
 If no target is given, the build-target will be executed.
 
 The above list is not complete, please see the source code for not-mentioned
-and only seldom called targets.
+and only seldomly called targets.
     '''
 
 if __name__ == '__main__':

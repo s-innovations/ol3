@@ -34,7 +34,7 @@
         "cleverLinks": true,
         "monospaceLinks": true,
         "default": {
-            "outputSourceFiles": false
+            "outputSourceFiles": true
         },
         "applicationName": "OpenLayers 3"
     },

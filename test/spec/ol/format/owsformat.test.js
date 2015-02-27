@@ -44,15 +44,15 @@ describe('ol.format.OWS 1.1', function() {
 
     var obj = parser.read(doc);
     expect(obj).to.be.ok();
-    var serviceProvider = obj.ServiceProvider;
+    var serviceProvider = obj.serviceProvider;
     expect(serviceProvider).to.be.ok();
-    expect(serviceProvider.ProviderName).to.eql('MiraMon');
+    expect(serviceProvider.providerName).to.eql('MiraMon');
     var url = 'http://www.creaf.uab.es/miramon';
-    expect(serviceProvider.ProviderSite).to.eql(url);
+    expect(serviceProvider.providerSite).to.eql(url);
     var name = 'Joan Maso Pau';
-    expect(serviceProvider.ServiceContact.IndividualName).to.eql(name);
+    expect(serviceProvider.serviceContact.individualName).to.eql(name);
     var position = 'Senior Software Engineer';
-    expect(serviceProvider.ServiceContact.PositionName).to.eql(position);
+    expect(serviceProvider.serviceContact.positionName).to.eql(position);
   });
 
   it('should read ServiceIdentification tag properly', function() {
@@ -78,11 +78,11 @@ describe('ol.format.OWS 1.1', function() {
     var obj = parser.readFromNode(doc.firstChild);
     expect(obj).to.be.ok();
 
-    var serviceIdentification = obj.ServiceIdentification;
+    var serviceIdentification = obj.serviceIdentification;
     expect(serviceIdentification).to.be.ok();
-    expect(serviceIdentification.Title).to.eql('Web Map Tile Service');
-    expect(serviceIdentification.ServiceTypeVersion).to.eql('1.0.0');
-    expect(serviceIdentification.ServiceType).to.eql('OGC WMTS');
+    expect(serviceIdentification.title).to.eql('Web Map Tile Service');
+    expect(serviceIdentification.serviceTypeVersion).to.eql('1.0.0');
+    expect(serviceIdentification.serviceType).to.eql('OGC WMTS');
   });
 
   it('should read OperationsMetadata tag properly', function() {
@@ -98,7 +98,6 @@ describe('ol.format.OWS 1.1', function() {
                             '<ows:Constraint name="GetEncoding">' +
                                 '<ows:AllowedValues>' +
                                     '<ows:Value>KVP</ows:Value>' +
-                                    '<ows:Value>SOAP</ows:Value>' +
                                 '</ows:AllowedValues>' +
                             '</ows:Constraint>' +
                         '</ows:Get>' +
@@ -131,24 +130,23 @@ describe('ol.format.OWS 1.1', function() {
     var obj = parser.readFromNode(doc.firstChild);
     expect(obj).to.be.ok();
 
-    var operationsMetadata = obj.OperationsMetadata;
+    var operationsMetadata = obj.operationsMetadata;
     expect(operationsMetadata).to.be.ok();
-    var getCap = operationsMetadata.GetCapabilities;
-    var dcp = getCap.DCP;
+    var dcp = operationsMetadata.GetCapabilities.dcp;
     var url = 'http://www.miramon.uab.es/cgi-bin/MiraMon5_0.cgi?';
-    expect(dcp.HTTP.Get[0].href).to.eql(url);
-    expect(dcp.HTTP.Get[0].Constraint[0].name).to.eql('GetEncoding');
-    expect(dcp.HTTP.Get[0].Constraint[0].AllowedValues.Value[0]).to.eql('KVP');
-
+    expect(dcp.http.get[0].url).to.eql(url);
+    dcp = operationsMetadata.GetCapabilities.dcp;
+    expect(dcp.http.get[0].constraints.GetEncoding.allowedValues).to.eql(
+        {'KVP': true});
     url = 'http://www.miramon.uab.es/cgi-bin/MiraMon5_0.cgi?';
-    dcp = operationsMetadata.GetFeatureInfo.DCP;
-    expect(dcp.HTTP.Get[0].href).to.eql(url);
-    expect(dcp.HTTP.Get[0].Constraint).to.be(undefined);
-
+    dcp = operationsMetadata.GetFeatureInfo.dcp;
+    expect(dcp.http.get[0].url).to.eql(url);
+    dcp = operationsMetadata.GetFeatureInfo.dcp;
+    expect(dcp.http.get[0].constraints).to.be(undefined);
     url = 'http://www.miramon.uab.es/cgi-bin/MiraMon5_0.cgi?';
-    dcp = operationsMetadata.GetTile.DCP;
-    expect(dcp.HTTP.Get[0].href).to.eql(url);
-    expect(dcp.HTTP.Get[0].Constraint).to.be(undefined);
+    expect(operationsMetadata.GetTile.dcp.http.get[0].url).to.eql(url);
+    dcp = operationsMetadata.GetTile.dcp;
+    expect(dcp.http.get[0].constraints).to.be(undefined);
   });
 
 });

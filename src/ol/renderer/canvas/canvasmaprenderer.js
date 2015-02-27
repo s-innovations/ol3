@@ -77,11 +77,11 @@ goog.inherits(ol.renderer.canvas.Map, ol.renderer.Map);
  */
 ol.renderer.canvas.Map.prototype.createLayerRenderer = function(layer) {
   if (ol.ENABLE_IMAGE && layer instanceof ol.layer.Image) {
-    return new ol.renderer.canvas.ImageLayer(layer);
+    return new ol.renderer.canvas.ImageLayer(this, layer);
   } else if (ol.ENABLE_TILE && layer instanceof ol.layer.Tile) {
-    return new ol.renderer.canvas.TileLayer(layer);
+    return new ol.renderer.canvas.TileLayer(this, layer);
   } else if (ol.ENABLE_VECTOR && layer instanceof ol.layer.Vector) {
-    return new ol.renderer.canvas.VectorLayer(layer);
+    return new ol.renderer.canvas.VectorLayer(this, layer);
   } else {
     goog.asserts.fail();
     return null;
@@ -123,7 +123,7 @@ ol.renderer.canvas.Map.prototype.dispatchComposeEvent_ =
 
     replayGroup.finish();
     if (!replayGroup.isEmpty()) {
-      replayGroup.replay(context, pixelRatio, this.transform_,
+      replayGroup.replay(context, extent, pixelRatio, this.transform_,
           rotation, {});
     }
     vectorContext.flush();

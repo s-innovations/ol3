@@ -3,6 +3,7 @@
 goog.provide('ol.interaction.Interaction');
 goog.provide('ol.interaction.InteractionProperty');
 
+goog.require('goog.asserts');
 goog.require('ol.MapBrowserEvent');
 goog.require('ol.Object');
 goog.require('ol.animation');
@@ -31,11 +32,11 @@ ol.interaction.InteractionProperty = {
  * vectors and so are visible on the screen.
  *
  * @constructor
- * @param {olx.interaction.InteractionOptions} options Options.
  * @extends {ol.Object}
+ * @implements {oli.interaction.Interaction}
  * @api
  */
-ol.interaction.Interaction = function(options) {
+ol.interaction.Interaction = function() {
 
   goog.base(this);
 
@@ -46,11 +47,6 @@ ol.interaction.Interaction = function(options) {
   this.map_ = null;
 
   this.setActive(true);
-
-  /**
-   * @type {function(ol.MapBrowserEvent):boolean}
-   */
-  this.handleEvent = options.handleEvent;
 
 };
 goog.inherits(ol.interaction.Interaction, ol.Object);
@@ -78,6 +74,22 @@ goog.exportProperty(
 ol.interaction.Interaction.prototype.getMap = function() {
   return this.map_;
 };
+
+
+/**
+ * Method called by the map to notify the interaction that a browser
+ * event was dispatched on the map. If the interaction wants to handle
+ * that event it can return `false` to prevent the propagation of the
+ * event to other interactions in the map's interactions chain.
+ * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
+ * @return {boolean} Whether the map browser event should continue
+ *     through the chain of interactions. `false` means stop, `true`
+ *     means continue.
+ * @function
+ * @api
+ */
+ol.interaction.Interaction.prototype.handleMapBrowserEvent =
+    goog.abstractMethod;
 
 
 /**

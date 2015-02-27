@@ -24,17 +24,9 @@ ol.source.MapQuest = function(opt_options) {
 
   var layerConfig = ol.source.MapQuestConfig[options.layer];
 
-  /**
-   * Layer. Possible values are `osm`, `sat`, and `hyb`.
-   * @type {string}
-   * @private
-   */
-  this.layer_ = options.layer;
-
   var protocol = ol.IS_HTTPS ? 'https:' : 'http:';
-  var url = goog.isDef(options.url) ? options.url :
-      protocol + '//otile{1-4}-s.mqcdn.com/tiles/1.0.0/' +
-      this.layer_ + '/{z}/{x}/{y}.jpg';
+  var url = protocol + '//otile{1-4}-s.mqcdn.com/tiles/1.0.0/' +
+      options.layer + '/{z}/{x}/{y}.jpg';
 
   goog.base(this, {
     attributions: layerConfig.attributions,
@@ -64,7 +56,7 @@ ol.source.MapQuest.TILE_ATTRIBUTION = new ol.Attribution({
  */
 ol.source.MapQuestConfig = {
   'osm': {
-    maxZoom: 19,
+    maxZoom: 28,
     attributions: [
       ol.source.MapQuest.TILE_ATTRIBUTION,
       ol.source.OSM.ATTRIBUTION
@@ -87,13 +79,4 @@ ol.source.MapQuestConfig = {
       ol.source.OSM.ATTRIBUTION
     ]
   }
-};
-
-
-/**
- * @return {string} Layer.
- * @api
- */
-ol.source.MapQuest.prototype.getLayer = function() {
-  return this.layer_;
 };

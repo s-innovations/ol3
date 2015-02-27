@@ -37,15 +37,7 @@ ol.source.VectorEventType = {
   CHANGEFEATURE: 'changefeature',
 
   /**
-   * Triggered when the clear method is called on the source.
-   * @event ol.source.VectorEvent#clear
-   * @api
-   */
-  CLEAR: 'clear',
-
-  /**
    * Triggered when a feature is removed from the source.
-   * See {@link ol.source.Vector#clear source.clear()} for exceptions.
    * @event ol.source.VectorEvent#removefeature
    * @api stable
    */
@@ -235,32 +227,15 @@ ol.source.Vector.prototype.addFeaturesInternal = function(features) {
 
 /**
  * Remove all features from the source.
- * @param {boolean=} opt_fast Skip dispatching of {@link removefeature} events.
  * @api stable
  */
-ol.source.Vector.prototype.clear = function(opt_fast) {
-  if (opt_fast) {
-    for (var featureId in this.featureChangeKeys_) {
-      var keys = this.featureChangeKeys_[featureId];
-      goog.array.forEach(keys, goog.events.unlistenByKey);
-    }
-    this.featureChangeKeys_ = {};
-    this.idIndex_ = {};
-    this.undefIdIndex_ = {};
-  } else {
-    var rmFeatureInternal = this.removeFeatureInternal;
-    this.rBush_.forEach(rmFeatureInternal, this);
-    goog.object.forEach(this.nullGeometryFeatures_, rmFeatureInternal, this);
-    goog.asserts.assert(goog.object.isEmpty(this.featureChangeKeys_));
-    goog.asserts.assert(goog.object.isEmpty(this.idIndex_));
-    goog.asserts.assert(goog.object.isEmpty(this.undefIdIndex_));
-  }
-
+ol.source.Vector.prototype.clear = function() {
+  this.rBush_.forEach(this.removeFeatureInternal, this);
   this.rBush_.clear();
-  this.nullGeometryFeatures_ = {};
-
-  var clearEvent = new ol.source.VectorEvent(ol.source.VectorEventType.CLEAR);
-  this.dispatchEvent(clearEvent);
+  goog.object.forEach(
+      this.nullGeometryFeatures_, this.removeFeatureInternal, this);
+  goog.object.clear(this.nullGeometryFeatures_);
+  goog.asserts.assert(goog.object.isEmpty(this.featureChangeKeys_));
   this.changed();
 };
 
@@ -295,7 +270,7 @@ ol.source.Vector.prototype.forEachFeature = function(callback, opt_this) {
  * @return {S|undefined} The return value from the last call to the callback.
  * @template T,S
  */
-ol.source.Vector.prototype.forEachFeatureAtCoordinateDirect =
+ol.source.Vector.prototype.forEachFeatureAtCoordinate =
     function(coordinate, callback, opt_this) {
   var extent = [coordinate[0], coordinate[1], coordinate[0], coordinate[1]];
   return this.forEachFeatureInExtent(extent, function(feature) {
@@ -409,7 +384,7 @@ ol.source.Vector.prototype.getFeatures = function() {
  */
 ol.source.Vector.prototype.getFeaturesAtCoordinate = function(coordinate) {
   var features = [];
-  this.forEachFeatureAtCoordinateDirect(coordinate, function(feature) {
+  this.forEachFeatureAtCoordinate(coordinate, function(feature) {
     features.push(feature);
   });
   return features;

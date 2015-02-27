@@ -1,5 +1,6 @@
 goog.provide('ol.interaction.DragRotate');
 
+goog.require('goog.asserts');
 goog.require('ol');
 goog.require('ol.ViewHint');
 goog.require('ol.events.ConditionType');
@@ -26,11 +27,7 @@ ol.interaction.DragRotate = function(opt_options) {
 
   var options = goog.isDef(opt_options) ? opt_options : {};
 
-  goog.base(this, {
-    handleDownEvent: ol.interaction.DragRotate.handleDownEvent_,
-    handleDragEvent: ol.interaction.DragRotate.handleDragEvent_,
-    handleUpEvent: ol.interaction.DragRotate.handleUpEvent_
-  });
+  goog.base(this);
 
   /**
    * @private
@@ -50,11 +47,10 @@ goog.inherits(ol.interaction.DragRotate, ol.interaction.Pointer);
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @this {ol.interaction.DragRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.DragRotate.handleDragEvent_ = function(mapBrowserEvent) {
+ol.interaction.DragRotate.prototype.handlePointerDrag =
+    function(mapBrowserEvent) {
   if (!ol.events.condition.mouseOnly(mapBrowserEvent)) {
     return;
   }
@@ -67,22 +63,20 @@ ol.interaction.DragRotate.handleDragEvent_ = function(mapBrowserEvent) {
   if (goog.isDef(this.lastAngle_)) {
     var delta = theta - this.lastAngle_;
     var view = map.getView();
-    var rotation = view.getRotation();
+    var viewState = view.getState();
     map.render();
     ol.interaction.Interaction.rotateWithoutConstraints(
-        map, view, rotation - delta);
+        map, view, viewState.rotation - delta);
   }
   this.lastAngle_ = theta;
 };
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @return {boolean} Stop drag sequence?
- * @this {ol.interaction.DragRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.DragRotate.handleUpEvent_ = function(mapBrowserEvent) {
+ol.interaction.DragRotate.prototype.handlePointerUp =
+    function(mapBrowserEvent) {
   if (!ol.events.condition.mouseOnly(mapBrowserEvent)) {
     return true;
   }
@@ -90,20 +84,18 @@ ol.interaction.DragRotate.handleUpEvent_ = function(mapBrowserEvent) {
   var map = mapBrowserEvent.map;
   var view = map.getView();
   view.setHint(ol.ViewHint.INTERACTING, -1);
-  var rotation = view.getRotation();
-  ol.interaction.Interaction.rotate(map, view, rotation,
+  var viewState = view.getState();
+  ol.interaction.Interaction.rotate(map, view, viewState.rotation,
       undefined, ol.DRAGROTATE_ANIMATION_DURATION);
   return false;
 };
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @return {boolean} Start drag sequence?
- * @this {ol.interaction.DragRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.DragRotate.handleDownEvent_ = function(mapBrowserEvent) {
+ol.interaction.DragRotate.prototype.handlePointerDown =
+    function(mapBrowserEvent) {
   if (!ol.events.condition.mouseOnly(mapBrowserEvent)) {
     return false;
   }
@@ -119,9 +111,3 @@ ol.interaction.DragRotate.handleDownEvent_ = function(mapBrowserEvent) {
     return false;
   }
 };
-
-
-/**
- * @inheritDoc
- */
-ol.interaction.DragRotate.prototype.shouldStopEvent = goog.functions.FALSE;

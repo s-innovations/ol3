@@ -1,5 +1,6 @@
 goog.provide('ol.renderer.dom.Layer');
 
+goog.require('goog.dom');
 goog.require('ol.layer.Layer');
 goog.require('ol.renderer.Layer');
 
@@ -8,12 +9,13 @@ goog.require('ol.renderer.Layer');
 /**
  * @constructor
  * @extends {ol.renderer.Layer}
+ * @param {ol.renderer.Map} mapRenderer Map renderer.
  * @param {ol.layer.Layer} layer Layer.
  * @param {!Element} target Target.
  */
-ol.renderer.dom.Layer = function(layer, target) {
+ol.renderer.dom.Layer = function(mapRenderer, layer, target) {
 
-  goog.base(this, layer);
+  goog.base(this, mapRenderer, layer);
 
   /**
    * @type {!Element}
@@ -44,11 +46,3 @@ ol.renderer.dom.Layer.prototype.composeFrame = goog.nullFunction;
 ol.renderer.dom.Layer.prototype.getTarget = function() {
   return this.target;
 };
-
-
-/**
- * @param {olx.FrameState} frameState Frame state.
- * @param {ol.layer.LayerState} layerState Layer state.
- * @return {boolean} whether composeFrame should be called.
- */
-ol.renderer.dom.Layer.prototype.prepareFrame = goog.abstractMethod;

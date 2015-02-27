@@ -3,6 +3,7 @@ goog.provide('ol.control.FullScreen');
 goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
+goog.require('goog.dom.classlist');
 goog.require('goog.dom.fullscreen');
 goog.require('goog.dom.fullscreen.EventType');
 goog.require('goog.events');
@@ -36,32 +37,13 @@ ol.control.FullScreen = function(opt_options) {
   this.cssClassName_ = goog.isDef(options.className) ?
       options.className : 'ol-full-screen';
 
-  var label = goog.isDef(options.label) ? options.label : '\u2194';
-
-  /**
-   * @private
-   * @type {Node}
-   */
-  this.labelNode_ = /** @type {Node} */ (goog.isString(label) ?
-          goog.dom.createTextNode(label) : label);
-
-  var labelActive = goog.isDef(options.labelActive) ?
-      options.labelActive : '\u00d7';
-
-  /**
-   * @private
-   * @type {Node}
-   */
-  this.labelActiveNode_ = /** @type {Node} */ (goog.isString(labelActive) ?
-          goog.dom.createTextNode(labelActive) : labelActive);
-
   var tipLabel = goog.isDef(options.tipLabel) ?
       options.tipLabel : 'Toggle full-screen';
   var button = goog.dom.createDom(goog.dom.TagName.BUTTON, {
     'class': this.cssClassName_ + '-' + goog.dom.fullscreen.isFullScreen(),
     'type': 'button',
     'title': tipLabel
-  }, this.labelNode_);
+  });
 
   goog.events.listen(button, goog.events.EventType.CLICK,
       this.handleClick_, false, this);
@@ -138,11 +120,14 @@ ol.control.FullScreen.prototype.handleFullScreen_ = function() {
  * @private
  */
 ol.control.FullScreen.prototype.handleFullScreenChange_ = function() {
+  var opened = this.cssClassName_ + '-true';
+  var closed = this.cssClassName_ + '-false';
+  var anchor = goog.dom.getFirstElementChild(this.element);
   var map = this.getMap();
   if (goog.dom.fullscreen.isFullScreen()) {
-    goog.dom.replaceNode(this.labelActiveNode_, this.labelNode_);
+    goog.dom.classlist.swap(anchor, closed, opened);
   } else {
-    goog.dom.replaceNode(this.labelNode_, this.labelActiveNode_);
+    goog.dom.classlist.swap(anchor, opened, closed);
   }
   if (!goog.isNull(map)) {
     map.updateSize();

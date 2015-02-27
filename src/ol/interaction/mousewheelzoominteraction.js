@@ -21,11 +21,9 @@ goog.require('ol.interaction.Interaction');
  */
 ol.interaction.MouseWheelZoom = function(opt_options) {
 
-  goog.base(this, {
-    handleEvent: ol.interaction.MouseWheelZoom.handleEvent
-  });
-
   var options = goog.isDef(opt_options) ? opt_options : {};
+
+  goog.base(this);
 
   /**
    * @private
@@ -62,12 +60,10 @@ goog.inherits(ol.interaction.MouseWheelZoom, ol.interaction.Interaction);
 
 
 /**
- * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
- * @return {boolean} `false` to stop event propagation.
- * @this {ol.interaction.MouseWheelZoom}
- * @api
+ * @inheritDoc
  */
-ol.interaction.MouseWheelZoom.handleEvent = function(mapBrowserEvent) {
+ol.interaction.MouseWheelZoom.prototype.handleMapBrowserEvent =
+    function(mapBrowserEvent) {
   var stopEvent = false;
   if (mapBrowserEvent.type ==
       goog.events.MouseWheelHandler.EventType.MOUSEWHEEL) {

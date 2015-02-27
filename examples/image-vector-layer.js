@@ -80,10 +80,7 @@ var displayFeatureInfo = function(pixel) {
 
 };
 
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    return;
-  }
+$(map.getViewport()).on('mousemove', function(evt) {
   var pixel = map.getEventPixel(evt.originalEvent);
   displayFeatureInfo(pixel);
 });

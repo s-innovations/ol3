@@ -28,9 +28,7 @@ goog.require('ol.style.Style');
  */
 ol.interaction.Select = function(opt_options) {
 
-  goog.base(this, {
-    handleEvent: ol.interaction.Select.handleEvent
-  });
+  goog.base(this);
 
   var options = goog.isDef(opt_options) ? opt_options : {};
 
@@ -61,12 +59,6 @@ ol.interaction.Select = function(opt_options) {
    */
   this.toggleCondition_ = goog.isDef(options.toggleCondition) ?
       options.toggleCondition : ol.events.condition.shiftKeyOnly;
-
-  /**
-   * @private
-   * @type {boolean}
-   */
-  this.multi_ = goog.isDef(options.multi) ? options.multi : false;
 
   var layerFilter;
   if (goog.isDef(options.layers)) {
@@ -123,12 +115,10 @@ ol.interaction.Select.prototype.getFeatures = function() {
 
 
 /**
- * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
- * @return {boolean} `false` to stop event propagation.
- * @this {ol.interaction.Select}
- * @api
+ * @inheritDoc
  */
-ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
+ol.interaction.Select.prototype.handleMapBrowserEvent =
+    function(mapBrowserEvent) {
   if (!this.condition_(mapBrowserEvent)) {
     return true;
   }
@@ -138,35 +128,34 @@ ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
   var set = !add && !remove && !toggle;
   var map = mapBrowserEvent.map;
   var features = this.featureOverlay_.getFeatures();
-  var /** @type {Array.<ol.Feature>} */ deselected = [];
-  var /** @type {Array.<ol.Feature>} */ selected = [];
   if (set) {
-    // Replace the currently selected feature(s) with the feature(s) at the
-    // pixel, or clear the selected feature(s) if there is no feature at
-    // the pixel.
-    map.forEachFeatureAtPixel(mapBrowserEvent.pixel,
+    // Replace the currently selected feature(s) with the feature at the pixel,
+    // or clear the selected feature(s) if there is no feature at the pixel.
+    /** @type {ol.Feature|undefined} */
+    var feature = map.forEachFeatureAtPixel(mapBrowserEvent.pixel,
         /**
          * @param {ol.Feature} feature Feature.
          * @param {ol.layer.Layer} layer Layer.
          */
         function(feature, layer) {
-          selected.push(feature);
+          return feature;
         }, undefined, this.layerFilter_);
-    if (selected.length > 0 && features.getLength() == 1 &&
-        features.item(0) == selected[0]) {
+    if (goog.isDef(feature) &&
+        features.getLength() == 1 &&
+        features.item(0) == feature) {
       // No change
     } else {
       if (features.getLength() !== 0) {
         features.clear();
       }
-      if (this.multi_) {
-        features.extend(selected);
-      } else if (selected.length > 0) {
-        features.push(selected[0]);
+      if (goog.isDef(feature)) {
+        features.push(feature);
       }
     }
   } else {
     // Modify the currently selected feature(s).
+    var /** @type {Array.<ol.Feature>} */ deselected = [];
+    var /** @type {Array.<ol.Feature>} */ selected = [];
     map.forEachFeatureAtPixel(mapBrowserEvent.pixel,
         /**
          * @param {ol.Feature} feature Feature.
@@ -190,7 +179,7 @@ ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
     }
     features.extend(selected);
   }
-  return ol.events.condition.mouseMove(mapBrowserEvent);
+  return this.condition_ == ol.events.condition.mouseMove;
 };
 
 

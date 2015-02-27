@@ -38,7 +38,7 @@ ol.source.ServerVector = function(options) {
   /**
    * @private
    * @type {function(this: ol.source.ServerVector, ol.Extent, number,
-   *                 ol.proj.Projection)}
+   *                 ol.proj.Projection): string}
    */
   this.loader_ = options.loader;
 
@@ -82,12 +82,11 @@ ol.source.ServerVector.prototype.addFeaturesInternal = function(features) {
 
 /**
  * @inheritDoc
- * @api stable
  */
-ol.source.ServerVector.prototype.clear = function(opt_fast) {
+ol.source.ServerVector.prototype.clear = function() {
   goog.object.clear(this.loadedFeatures_);
   this.loadedExtents_.clear();
-  goog.base(this, 'clear', opt_fast);
+  goog.base(this, 'clear');
 };
 
 

@@ -51,7 +51,7 @@ ol.Image = function(extent, resolution, pixelRatio, attributions, src,
 
   /**
    * @private
-   * @type {Array.<goog.events.Key>}
+   * @type {Array.<number>}
    */
   this.imageListenerKeys_ = null;
 

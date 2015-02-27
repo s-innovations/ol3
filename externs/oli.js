@@ -92,12 +92,6 @@ oli.MapBrowserEvent.prototype.originalEvent;
 oli.MapBrowserEvent.prototype.pixel;
 
 
-/**
- * @type {boolean}
- */
-oli.MapBrowserEvent.prototype.dragging;
-
-
 
 /**
  * @interface
@@ -141,6 +135,22 @@ oli.control.Control.prototype.setMap = function(map) {};
  * @type {Object}
  */
 oli.interaction;
+
+
+
+/**
+ * @interface
+ */
+oli.interaction.Interaction = function() {};
+
+/**
+ * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
+ * @return {boolean} Whether the map browser event should continue
+ *     through the chain of interactions. `false` means stop, `true`
+ *     means continue.
+ */
+oli.interaction.Interaction.prototype.handleMapBrowserEvent =
+    function(mapBrowserEvent) {};
 
 
 /**
@@ -209,17 +219,6 @@ oli.render.Event.prototype.vectorContext;
  */
 oli.source;
 
-
-/**
- * @interface
- */
-oli.source.TileEvent = function() {};
-
-
-/**
- * @type {ol.Tile}
- */
-oli.source.TileEvent.prototype.tile;
 
 
 /**

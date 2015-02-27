@@ -30,9 +30,10 @@ goog.require('ol.vec.Mat4');
 /**
  * @constructor
  * @extends {ol.renderer.dom.Layer}
+ * @param {ol.renderer.Map} mapRenderer Map renderer.
  * @param {ol.layer.Tile} tileLayer Tile layer.
  */
-ol.renderer.dom.TileLayer = function(tileLayer) {
+ol.renderer.dom.TileLayer = function(mapRenderer, tileLayer) {
 
   var target = goog.dom.createElement(goog.dom.TagName.DIV);
   target.style.position = 'absolute';
@@ -43,7 +44,7 @@ ol.renderer.dom.TileLayer = function(tileLayer) {
     target.style.height = '100%';
   }
 
-  goog.base(this, tileLayer, target);
+  goog.base(this, mapRenderer, tileLayer, target);
 
   /**
    * @private
@@ -128,9 +129,16 @@ ol.renderer.dom.TileLayer.prototype.prepareFrame =
   var tilesToDrawByZ = {};
   tilesToDrawByZ[z] = {};
 
-  var findLoadedTiles = this.createLoadedTileFinder(tileSource, tilesToDrawByZ);
+  var getTileIfLoaded = this.createGetTileIfLoadedFunction(function(tile) {
+    return !goog.isNull(tile) && tile.getState() == ol.TileState.LOADED;
+  }, tileSource, pixelRatio, projection);
+  var findLoadedTiles = goog.bind(tileSource.findLoadedTiles, tileSource,
+      tilesToDrawByZ, getTileIfLoaded);
 
   var useInterimTilesOnError = tileLayer.getUseInterimTilesOnError();
+  if (!goog.isDef(useInterimTilesOnError)) {
+    useInterimTilesOnError = true;
+  }
 
   var tmpExtent = ol.extent.createEmpty();
   var tmpTileRange = new ol.TileRange(0, 0, 0, 0);

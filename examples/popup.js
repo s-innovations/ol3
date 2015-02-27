@@ -20,7 +20,7 @@ var closer = document.getElementById('popup-closer');
  * @return {boolean} Don't follow the href.
  */
 closer.onclick = function() {
-  overlay.setPosition(undefined);
+  container.style.display = 'none';
   closer.blur();
   return false;
 };
@@ -29,13 +29,9 @@ closer.onclick = function() {
 /**
  * Create an overlay to anchor the popup to the map.
  */
-var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-  element: container,
-  autoPan: true,
-  autoPanAnimation: {
-    duration: 250
-  }
-}));
+var overlay = new ol.Overlay({
+  element: container
+});
 
 
 /**
@@ -64,12 +60,14 @@ var map = new ol.Map({
 /**
  * Add a click handler to the map to render the popup.
  */
-map.on('singleclick', function(evt) {
+map.on('click', function(evt) {
   var coordinate = evt.coordinate;
   var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
       coordinate, 'EPSG:3857', 'EPSG:4326'));
 
+  overlay.setPosition(coordinate);
   content.innerHTML = '<p>You clicked here:</p><code>' + hdms +
       '</code>';
-  overlay.setPosition(coordinate);
+  container.style.display = 'block';
+
 });

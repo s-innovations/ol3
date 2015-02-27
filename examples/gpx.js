@@ -85,10 +85,7 @@ var displayFeatureInfo = function(pixel) {
   }
 };
 
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    return;
-  }
+$(map.getViewport()).on('mousemove', function(evt) {
   var pixel = map.getEventPixel(evt.originalEvent);
   displayFeatureInfo(pixel);
 });
@@ -108,7 +105,9 @@ if ('download' in exportGPXElement) {
         clone.getGeometry().transform(projection, 'EPSG:4326');
         features.push(clone);
       });
-      var string = new ol.format.GPX().writeFeatures(features);
+      var node = new ol.format.GPX().writeFeatures(features);
+      var string = new XMLSerializer().serializeToString(
+          /** @type {Node} */ (node));
       var base64 = exampleNS.strToBase64(string);
       exportGPXElement.href =
           'data:text/gpx+xml;base64,' + base64;

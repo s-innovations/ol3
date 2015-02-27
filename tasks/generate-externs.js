@@ -11,7 +11,7 @@ var googRegEx = /^goog\..*$/;
 
 /**
  * Read the symbols from info file.
- * @param {function(Error, Array.<string>, Array.<Object>)} callback Called
+ * @param {funciton(Error, Array.<string>, Array.<Object>)} callback Called
  *     with the patterns and symbols (or any error).
  */
 function getInfo(callback) {

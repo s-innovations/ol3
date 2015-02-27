@@ -1,4 +1,3 @@
 {
-  "exports": ["*"],
-  "umd": true
+  "exports": ["*"]
 }

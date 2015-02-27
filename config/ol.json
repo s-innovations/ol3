@@ -1,6 +1,5 @@
 {
   "exports": ["*"],
-  "umd": true,
   "compile": {
     "externs": [
       "externs/bingmaps.js",
@@ -60,9 +59,8 @@
     ],
     "compilation_level": "ADVANCED",
     "warning_level": "VERBOSE",
+    "output_wrapper": "(function(){%output%})();",
     "use_types_for_optimization": true,
-    "manage_closure_dependencies": true,
-    "create_source_map": "build/ol.js.map",
-    "source_map_format": "V3"
+    "manage_closure_dependencies": true
   }
 }

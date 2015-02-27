@@ -112,12 +112,8 @@ ol.control.ScaleLine = function(opt_options) {
    */
   this.toEPSG4326_ = null;
 
-  var render = goog.isDef(options.render) ?
-      options.render : ol.control.ScaleLine.render;
-
   goog.base(this, {
     element: this.element_,
-    render: render,
     target: options.target
   });
 
@@ -156,11 +152,9 @@ goog.exportProperty(
 
 
 /**
- * @param {ol.MapEvent} mapEvent Map event.
- * @this {ol.control.ScaleLine}
- * @api
+ * @inheritDoc
  */
-ol.control.ScaleLine.render = function(mapEvent) {
+ol.control.ScaleLine.prototype.handleMapPostrender = function(mapEvent) {
   var frameState = mapEvent.frameState;
   if (goog.isNull(frameState)) {
     this.viewState_ = null;
@@ -325,7 +319,7 @@ ol.control.ScaleLine.prototype.updateElement_ = function() {
     ++i;
   }
 
-  var html = count + ' ' + suffix;
+  var html = count + suffix;
   if (this.renderedHTML_ != html) {
     this.innerElement_.innerHTML = html;
     this.renderedHTML_ = html;

@@ -119,32 +119,21 @@ ol.has.MSPOINTER = !!(goog.global.navigator.msPointerEnabled);
  * @type {boolean}
  * @api stable
  */
-ol.has.WEBGL;
-
-
-(function() {
-  if (ol.ENABLE_WEBGL) {
-    var hasWebGL = false;
-    var textureSize;
-    var /** @type {Array.<string>} */ extensions = [];
-
-    if ('WebGLRenderingContext' in goog.global) {
+ol.has.WEBGL = ol.ENABLE_WEBGL && (
+    /**
+     * @return {boolean} WebGL supported.
+     */
+    function() {
+      if (!('WebGLRenderingContext' in goog.global)) {
+        return false;
+      }
       try {
         var canvas = /** @type {HTMLCanvasElement} */
             (goog.dom.createElement(goog.dom.TagName.CANVAS));
-        var gl = ol.webgl.getContext(canvas, {
+        return !goog.isNull(ol.webgl.getContext(canvas, {
           failIfMajorPerformanceCaveat: true
-        });
-        if (!goog.isNull(gl)) {
-          hasWebGL = true;
-          textureSize = /** @type {number} */
-              (gl.getParameter(gl.MAX_TEXTURE_SIZE));
-          extensions = gl.getSupportedExtensions();
-        }
-      } catch (e) {}
-    }
-    ol.has.WEBGL = hasWebGL;
-    ol.WEBGL_EXTENSIONS = extensions;
-    ol.WEBGL_MAX_TEXTURE_SIZE = textureSize;
-  }
-})();
+        }));
+      } catch (e) {
+        return false;
+      }
+    })();

@@ -108,7 +108,8 @@ ol.pointer.MsSource.prototype.cleanup = function(pointerId) {
  * @param {goog.events.BrowserEvent} inEvent
  */
 ol.pointer.MsSource.prototype.msPointerDown = function(inEvent) {
-  this.pointerMap[inEvent.getBrowserEvent().pointerId] = inEvent;
+  goog.object.set(this.pointerMap,
+      inEvent.getBrowserEvent().pointerId, inEvent);
   var e = this.prepareEvent_(inEvent);
   this.dispatcher.down(e, inEvent);
 };

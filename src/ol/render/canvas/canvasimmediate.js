@@ -428,11 +428,11 @@ ol.render.canvas.Immediate.prototype.drawAsync = function(zIndex, callback) {
  * the current fill and stroke styles.
  *
  * @param {ol.geom.Circle} circleGeometry Circle geometry.
- * @param {ol.Feature} feature Feature,
+ * @param {Object} data Opaque data object,
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawCircleGeometry =
-    function(circleGeometry, feature) {
+    function(circleGeometry, data) {
   if (!ol.extent.intersects(this.extent_, circleGeometry.getExtent())) {
     return;
   }
@@ -477,7 +477,7 @@ ol.render.canvas.Immediate.prototype.drawCircleGeometry =
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawFeature = function(feature, style) {
-  var geometry = style.getGeometryFunction()(feature);
+  var geometry = feature.getGeometry();
   if (!goog.isDefAndNotNull(geometry) ||
       !ol.extent.intersects(this.extent_, geometry.getExtent())) {
     return;
@@ -504,10 +504,10 @@ ol.render.canvas.Immediate.prototype.drawFeature = function(feature, style) {
  *
  * @param {ol.geom.GeometryCollection} geometryCollectionGeometry Geometry
  *     collection.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  */
 ol.render.canvas.Immediate.prototype.drawGeometryCollectionGeometry =
-    function(geometryCollectionGeometry, feature) {
+    function(geometryCollectionGeometry, data) {
   var geometries = geometryCollectionGeometry.getGeometriesArray();
   var i, ii;
   for (i = 0, ii = geometries.length; i < ii; ++i) {
@@ -515,7 +515,7 @@ ol.render.canvas.Immediate.prototype.drawGeometryCollectionGeometry =
     var geometryRenderer =
         ol.render.canvas.Immediate.GEOMETRY_RENDERERS_[geometry.getType()];
     goog.asserts.assert(goog.isDef(geometryRenderer));
-    geometryRenderer.call(this, geometry, feature);
+    geometryRenderer.call(this, geometry, data);
   }
 };
 
@@ -525,11 +525,11 @@ ol.render.canvas.Immediate.prototype.drawGeometryCollectionGeometry =
  * the current style.
  *
  * @param {ol.geom.Point} pointGeometry Point geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawPointGeometry =
-    function(pointGeometry, feature) {
+    function(pointGeometry, data) {
   var flatCoordinates = pointGeometry.getFlatCoordinates();
   var stride = pointGeometry.getStride();
   if (!goog.isNull(this.image_)) {
@@ -546,11 +546,11 @@ ol.render.canvas.Immediate.prototype.drawPointGeometry =
  * uses the current style.
  *
  * @param {ol.geom.MultiPoint} multiPointGeometry MultiPoint geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawMultiPointGeometry =
-    function(multiPointGeometry, feature) {
+    function(multiPointGeometry, data) {
   var flatCoordinates = multiPointGeometry.getFlatCoordinates();
   var stride = multiPointGeometry.getStride();
   if (!goog.isNull(this.image_)) {
@@ -567,11 +567,11 @@ ol.render.canvas.Immediate.prototype.drawMultiPointGeometry =
  * the current style.
  *
  * @param {ol.geom.LineString} lineStringGeometry Line string geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawLineStringGeometry =
-    function(lineStringGeometry, feature) {
+    function(lineStringGeometry, data) {
   if (!ol.extent.intersects(this.extent_, lineStringGeometry.getExtent())) {
     return;
   }
@@ -597,11 +597,11 @@ ol.render.canvas.Immediate.prototype.drawLineStringGeometry =
  *
  * @param {ol.geom.MultiLineString} multiLineStringGeometry
  *     MultiLineString geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawMultiLineStringGeometry =
-    function(multiLineStringGeometry, feature) {
+    function(multiLineStringGeometry, data) {
   var geometryExtent = multiLineStringGeometry.getExtent();
   if (!ol.extent.intersects(this.extent_, geometryExtent)) {
     return;
@@ -633,11 +633,11 @@ ol.render.canvas.Immediate.prototype.drawMultiLineStringGeometry =
  * the current style.
  *
  * @param {ol.geom.Polygon} polygonGeometry Polygon geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawPolygonGeometry =
-    function(polygonGeometry, feature) {
+    function(polygonGeometry, data) {
   if (!ol.extent.intersects(this.extent_, polygonGeometry.getExtent())) {
     return;
   }
@@ -670,11 +670,11 @@ ol.render.canvas.Immediate.prototype.drawPolygonGeometry =
  * Render MultiPolygon geometry into the canvas.  Rendering is immediate and
  * uses the current style.
  * @param {ol.geom.MultiPolygon} multiPolygonGeometry MultiPolygon geometry.
- * @param {ol.Feature} feature Feature.
+ * @param {Object} data Opaque data object.
  * @api
  */
 ol.render.canvas.Immediate.prototype.drawMultiPolygonGeometry =
-    function(multiPolygonGeometry, feature) {
+    function(multiPolygonGeometry, data) {
   if (!ol.extent.intersects(this.extent_, multiPolygonGeometry.getExtent())) {
     return;
   }

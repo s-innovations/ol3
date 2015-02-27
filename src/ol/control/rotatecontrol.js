@@ -1,5 +1,6 @@
 goog.provide('ol.control.Rotate');
 
+goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
@@ -31,22 +32,12 @@ ol.control.Rotate = function(opt_options) {
   var className = goog.isDef(options.className) ?
       options.className : 'ol-rotate';
 
-  var label = goog.isDef(options.label) ?
-      options.label : '\u21E7';
-
   /**
-   * @type {Node}
+   * @type {Element}
    * @private
    */
-  this.label_ = null;
-
-  if (goog.isString(label)) {
-    this.label_ = goog.dom.createDom(goog.dom.TagName.SPAN,
-        'ol-compass', label);
-  } else {
-    this.label_ = label;
-    goog.dom.classlist.add(this.label_, 'ol-compass');
-  }
+  this.label_ = goog.dom.createDom(goog.dom.TagName.SPAN,
+      'ol-compass', goog.isDef(options.label) ? options.label : '\u21E7');
 
   var tipLabel = goog.isDef(options.tipLabel) ?
       options.tipLabel : 'Reset rotation';
@@ -71,12 +62,8 @@ ol.control.Rotate = function(opt_options) {
       ol.css.CLASS_CONTROL;
   var element = goog.dom.createDom(goog.dom.TagName.DIV, cssClasses, button);
 
-  var render = goog.isDef(options.render) ?
-      options.render : ol.control.Rotate.render;
-
   goog.base(this, {
     element: element,
-    render: render,
     target: options.target
   });
 
@@ -148,11 +135,9 @@ ol.control.Rotate.prototype.resetNorth_ = function() {
 
 
 /**
- * @param {ol.MapEvent} mapEvent Map event.
- * @this {ol.control.Rotate}
- * @api
+ * @inheritDoc
  */
-ol.control.Rotate.render = function(mapEvent) {
+ol.control.Rotate.prototype.handleMapPostrender = function(mapEvent) {
   var frameState = mapEvent.frameState;
   if (goog.isNull(frameState)) {
     return;

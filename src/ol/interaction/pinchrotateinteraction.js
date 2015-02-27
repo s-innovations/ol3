@@ -1,7 +1,6 @@
 goog.provide('ol.interaction.PinchRotate');
 
 goog.require('goog.asserts');
-goog.require('goog.functions');
 goog.require('goog.style');
 goog.require('ol');
 goog.require('ol.Coordinate');
@@ -23,11 +22,7 @@ goog.require('ol.interaction.Pointer');
  */
 ol.interaction.PinchRotate = function(opt_options) {
 
-  goog.base(this, {
-    handleDownEvent: ol.interaction.PinchRotate.handleDownEvent_,
-    handleDragEvent: ol.interaction.PinchRotate.handleDragEvent_,
-    handleUpEvent: ol.interaction.PinchRotate.handleUpEvent_
-  });
+  goog.base(this);
 
   var options = goog.isDef(opt_options) ? opt_options : {};
 
@@ -66,11 +61,10 @@ goog.inherits(ol.interaction.PinchRotate, ol.interaction.Pointer);
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @this {ol.interaction.PinchRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.PinchRotate.handleDragEvent_ = function(mapBrowserEvent) {
+ol.interaction.PinchRotate.prototype.handlePointerDrag =
+    function(mapBrowserEvent) {
   goog.asserts.assert(this.targetPointers.length >= 2);
   var rotationDelta = 0.0;
 
@@ -108,29 +102,28 @@ ol.interaction.PinchRotate.handleDragEvent_ = function(mapBrowserEvent) {
   // rotate
   if (this.rotating_) {
     var view = map.getView();
-    var rotation = view.getRotation();
+    var viewState = view.getState();
     map.render();
     ol.interaction.Interaction.rotateWithoutConstraints(map, view,
-        rotation + rotationDelta, this.anchor_);
+        viewState.rotation + rotationDelta, this.anchor_);
   }
 };
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @return {boolean} Stop drag sequence?
- * @this {ol.interaction.PinchRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.PinchRotate.handleUpEvent_ = function(mapBrowserEvent) {
+ol.interaction.PinchRotate.prototype.handlePointerUp =
+    function(mapBrowserEvent) {
   if (this.targetPointers.length < 2) {
     var map = mapBrowserEvent.map;
     var view = map.getView();
     view.setHint(ol.ViewHint.INTERACTING, -1);
     if (this.rotating_) {
-      var rotation = view.getRotation();
+      var viewState = view.getState();
       ol.interaction.Interaction.rotate(
-          map, view, rotation, this.anchor_, ol.ROTATE_ANIMATION_DURATION);
+          map, view, viewState.rotation, this.anchor_,
+          ol.ROTATE_ANIMATION_DURATION);
     }
     return false;
   } else {
@@ -140,12 +133,10 @@ ol.interaction.PinchRotate.handleUpEvent_ = function(mapBrowserEvent) {
 
 
 /**
- * @param {ol.MapBrowserPointerEvent} mapBrowserEvent Event.
- * @return {boolean} Start drag sequence?
- * @this {ol.interaction.PinchRotate}
- * @private
+ * @inheritDoc
  */
-ol.interaction.PinchRotate.handleDownEvent_ = function(mapBrowserEvent) {
+ol.interaction.PinchRotate.prototype.handlePointerDown =
+    function(mapBrowserEvent) {
   if (this.targetPointers.length >= 2) {
     var map = mapBrowserEvent.map;
     this.anchor_ = null;
@@ -161,9 +152,3 @@ ol.interaction.PinchRotate.handleDownEvent_ = function(mapBrowserEvent) {
     return false;
   }
 };
-
-
-/**
- * @inheritDoc
- */
-ol.interaction.PinchRotate.prototype.shouldStopEvent = goog.functions.FALSE;

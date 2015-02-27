@@ -29,13 +29,11 @@
         pairs = [],
         i,
         pair,
-        adjusted,
-        modeFound = false;
+        adjusted;
     for (i = chunks.length - 1; i >= 0; --i) {
       pair = chunks[i].split('=');
       if (pair[0].toLowerCase() === 'mode') {
         pair[1] = newMode;
-        modeFound = true;
       }
       adjusted = encodeURIComponent(pair[0]);
       if (typeof pair[1] !== undefined) {
@@ -43,8 +41,8 @@
       }
       pairs.push(adjusted);
     }
-    if (!modeFound) {
-      pairs.push('mode=' + encodeURIComponent(newMode));
+    if (pairs.length === 0) {
+      pairs[0] = 'mode=' + encodeURIComponent(newMode);
     }
     location.href = baseUrl + '?' + pairs.join('&');
   };

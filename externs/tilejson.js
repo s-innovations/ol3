@@ -1,7 +1,6 @@
 /**
  * @externs
  * @see https://github.com/mapbox/tilejson-spec
- * @see https://github.com/mapbox/utfgrid-spec
  */
 
 
@@ -94,28 +93,3 @@ TileJSON.prototype.bounds;
  * @type {!Array.<number>|undefined}
  */
 TileJSON.prototype.center;
-
-
-
-/**
- * @constructor
- */
-var UTFGridJSON = function() {};
-
-
-/**
- * @type {!Array.<string>}
- */
-UTFGridJSON.prototype.grid;
-
-
-/**
- * @type {!Array.<string>}
- */
-UTFGridJSON.prototype.keys;
-
-
-/**
- * @type {!Object.<string, Object>|undefined}
- */
-UTFGridJSON.prototype.data;

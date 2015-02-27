@@ -60,16 +60,6 @@ goog.inherits(ol.source.Cluster, ol.source.Vector);
 
 
 /**
- * Get a reference to the wrapped source.
- * @return {ol.source.Vector} Source.
- * @api
- */
-ol.source.Cluster.prototype.getSource = function() {
-  return this.source_;
-};
-
-
-/**
  * @inheritDoc
  */
 ol.source.Cluster.prototype.loadFeatures = function(extent, resolution,
@@ -103,7 +93,7 @@ ol.source.Cluster.prototype.cluster_ = function() {
   if (!goog.isDef(this.resolution_)) {
     return;
   }
-  this.features_.length = 0;
+  goog.array.clear(this.features_);
   var extent = ol.extent.createEmpty();
   var mapDistance = this.distance_ * this.resolution_;
   var features = this.source_.getFeatures();
@@ -127,7 +117,7 @@ ol.source.Cluster.prototype.cluster_ = function() {
       neighbors = goog.array.filter(neighbors, function(neighbor) {
         var uid = goog.getUid(neighbor).toString();
         if (!goog.object.containsKey(clustered, uid)) {
-          clustered[uid] = true;
+          goog.object.set(clustered, uid, true);
           return true;
         } else {
           return false;

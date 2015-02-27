@@ -5,8 +5,6 @@ goog.require('ol.layer.Tile');
 goog.require('ol.source.KML');
 goog.require('ol.source.Stamen');
 
-var blur = $('#blur');
-var radius = $('#radius');
 
 var vector = new ol.layer.Heatmap({
   source: new ol.source.KML({
@@ -14,8 +12,7 @@ var vector = new ol.layer.Heatmap({
     projection: 'EPSG:3857',
     url: 'data/kml/2012_Earthquakes_Mag5.kml'
   }),
-  blur: parseInt(blur.val(), 10),
-  radius: parseInt(radius.val(), 10)
+  radius: 5
 });
 
 vector.getSource().on('addfeature', function(event) {
@@ -40,13 +37,4 @@ var map = new ol.Map({
     center: [0, 0],
     zoom: 2
   })
-});
-
-
-blur.on('input', function() {
-  vector.setBlur(parseInt(blur.val(), 10));
-});
-
-radius.on('input', function() {
-  vector.setRadius(parseInt(radius.val(), 10));
 });

@@ -4,7 +4,6 @@ goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.object');
 goog.require('ol.ext.rbush');
-goog.require('ol.extent');
 
 
 
@@ -60,9 +59,7 @@ ol.structs.RBush.prototype.insert = function(extent, value) {
   ];
   this.rbush_.insert(item);
   // remember the object that was added to the internal rbush
-  goog.asserts.assert(
-      !goog.object.containsKey(this.items_, goog.getUid(value)));
-  this.items_[goog.getUid(value)] = item;
+  goog.object.add(this.items_, goog.getUid(value).toString(), item);
 };
 
 
@@ -77,7 +74,7 @@ ol.structs.RBush.prototype.load = function(extents, values) {
   }
   goog.asserts.assert(extents.length === values.length);
 
-  var items = new Array(values.length);
+  var items = [];
   for (var i = 0, l = values.length; i < l; i++) {
     var extent = extents[i];
     var value = values[i];
@@ -89,10 +86,8 @@ ol.structs.RBush.prototype.load = function(extents, values) {
       extent[3],
       value
     ];
-    items[i] = item;
-    goog.asserts.assert(
-        !goog.object.containsKey(this.items_, goog.getUid(value)));
-    this.items_[goog.getUid(value)] = item;
+    items.push(item);
+    goog.object.add(this.items_, goog.getUid(value).toString(), item);
   }
   this.rbush_.load(items);
 };
@@ -107,12 +102,12 @@ ol.structs.RBush.prototype.remove = function(value) {
   if (goog.DEBUG && this.readers_) {
     throw new Error('Can not remove value while reading');
   }
-  var uid = goog.getUid(value);
+  var uid = goog.getUid(value).toString();
   goog.asserts.assert(goog.object.containsKey(this.items_, uid));
 
   // get the object in which the value was wrapped when adding to the
   // internal rbush. then use that object to do the removal.
-  var item = this.items_[uid];
+  var item = goog.object.get(this.items_, uid);
   goog.object.remove(this.items_, uid);
   return this.rbush_.remove(item) !== null;
 };
@@ -124,17 +119,8 @@ ol.structs.RBush.prototype.remove = function(value) {
  * @param {T} value Value.
  */
 ol.structs.RBush.prototype.update = function(extent, value) {
-  var uid = goog.getUid(value);
-  goog.asserts.assert(goog.object.containsKey(this.items_, uid));
-
-  var item = this.items_[uid];
-  if (!ol.extent.equals(item.slice(0, 4), extent)) {
-    if (goog.DEBUG && this.readers_) {
-      throw new Error('Can not update extent while reading');
-    }
-    this.remove(value);
-    this.insert(extent, value);
-  }
+  this.remove(value);
+  this.insert(extent, value);
 };
 
 
@@ -242,7 +228,7 @@ ol.structs.RBush.prototype.isEmpty = function() {
  */
 ol.structs.RBush.prototype.clear = function() {
   this.rbush_.clear();
-  this.items_ = {};
+  goog.object.clear(this.items_);
 };
 
 

@@ -249,14 +249,6 @@ ol.style.Icon.prototype.getImageSize = function() {
 /**
  * @inheritDoc
  */
-ol.style.Icon.prototype.getHitDetectionImageSize = function() {
-  return this.getImageSize();
-};
-
-
-/**
- * @inheritDoc
- */
 ol.style.Icon.prototype.getImageState = function() {
   return this.iconImage_.getImageState();
 };
@@ -377,7 +369,7 @@ ol.style.IconImage_ = function(image, src, crossOrigin, imageState) {
 
   /**
    * @private
-   * @type {Array.<goog.events.Key>}
+   * @type {Array.<number>}
    */
   this.imageListenerKeys_ = null;
 

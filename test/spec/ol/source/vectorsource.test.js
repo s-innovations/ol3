@@ -85,31 +85,11 @@ describe('ol.source.Vector', function() {
 
     describe('#clear', function() {
 
-      it('removes all features using fast path', function() {
+      it('removes all features', function() {
         var changeSpy = sinon.spy();
         goog.events.listen(vectorSource, 'change', changeSpy);
         var removeFeatureSpy = sinon.spy();
         goog.events.listen(vectorSource, 'removefeature', removeFeatureSpy);
-        var clearSourceSpy = sinon.spy();
-        goog.events.listen(vectorSource, 'clear', clearSourceSpy);
-        vectorSource.clear(true);
-        expect(vectorSource.getFeatures()).to.eql([]);
-        expect(vectorSource.isEmpty()).to.be(true);
-        expect(changeSpy).to.be.called();
-        expect(changeSpy.callCount).to.be(1);
-        expect(removeFeatureSpy).not.to.be.called();
-        expect(removeFeatureSpy.callCount).to.be(0);
-        expect(clearSourceSpy).to.be.called();
-        expect(clearSourceSpy.callCount).to.be(1);
-      });
-
-      it('removes all features using slow path', function() {
-        var changeSpy = sinon.spy();
-        goog.events.listen(vectorSource, 'change', changeSpy);
-        var removeFeatureSpy = sinon.spy();
-        goog.events.listen(vectorSource, 'removefeature', removeFeatureSpy);
-        var clearSourceSpy = sinon.spy();
-        goog.events.listen(vectorSource, 'clear', clearSourceSpy);
         vectorSource.clear();
         expect(vectorSource.getFeatures()).to.eql([]);
         expect(vectorSource.isEmpty()).to.be(true);
@@ -117,8 +97,6 @@ describe('ol.source.Vector', function() {
         expect(changeSpy.callCount).to.be(1);
         expect(removeFeatureSpy).to.be.called();
         expect(removeFeatureSpy.callCount).to.be(features.length);
-        expect(clearSourceSpy).to.be.called();
-        expect(clearSourceSpy.callCount).to.be(1);
       });
 
     });

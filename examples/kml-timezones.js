@@ -92,11 +92,7 @@ var displayFeatureInfo = function(pixel) {
   }
 };
 
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    info.tooltip('hide');
-    return;
-  }
+$(map.getViewport()).on('mousemove', function(evt) {
   displayFeatureInfo(map.getEventPixel(evt.originalEvent));
 });
 

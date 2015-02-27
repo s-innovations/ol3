@@ -33,7 +33,6 @@ goog.require('ol.tilegrid.XYZ');
 ol.source.TileJSON = function(options) {
 
   goog.base(this, {
-    attributions: options.attributions,
     crossOrigin: options.crossOrigin,
     projection: ol.proj.get('EPSG:3857'),
     state: ol.source.State.LOADING,
@@ -88,8 +87,7 @@ ol.source.TileJSON.prototype.handleTileJSONResponse = function(tileJSON) {
       }),
       ol.TileUrlFunction.createFromTemplates(tileJSON.tiles));
 
-  if (goog.isDef(tileJSON.attribution) &&
-      goog.isNull(this.getAttributions())) {
+  if (goog.isDef(tileJSON.attribution)) {
     var attributionExtent = goog.isDef(extent) ?
         extent : epsg4326Projection.getExtent();
     /** @type {Object.<string, Array.<ol.TileRange>>} */

@@ -83,10 +83,7 @@ var displaySnap = function(coordinate) {
   map.render();
 };
 
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    return;
-  }
+$(map.getViewport()).on('mousemove', function(evt) {
   var coordinate = map.getEventCoordinate(evt.originalEvent);
   displaySnap(coordinate);
 });
@@ -119,12 +116,13 @@ map.on('postcompose', function(evt) {
   }
 });
 
-map.on('pointermove', function(evt) {
-  if (evt.dragging) {
-    return;
-  }
-  var pixel = map.getEventPixel(evt.originalEvent);
-  var hit = map.hasFeatureAtPixel(pixel);
+$(map.getViewport()).on('mousemove', function(e) {
+  var pixel = map.getEventPixel(e.originalEvent);
+
+  var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+    return true;
+  });
+
   if (hit) {
     map.getTarget().style.cursor = 'pointer';
   } else {

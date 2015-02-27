@@ -100,12 +100,8 @@ ol.control.ZoomSlider = function(opt_options) {
   goog.events.listen(thumbElement, goog.events.EventType.CLICK,
       goog.events.Event.stopPropagation);
 
-  var render = goog.isDef(options.render) ?
-      options.render : ol.control.ZoomSlider.render;
-
   goog.base(this, {
-    element: containerElement,
-    render: render
+    element: containerElement
   });
 };
 goog.inherits(ol.control.ZoomSlider, ol.control.Control);
@@ -170,11 +166,9 @@ ol.control.ZoomSlider.prototype.initSlider_ = function() {
 
 
 /**
- * @param {ol.MapEvent} mapEvent Map event.
- * @this {ol.control.ZoomSlider}
- * @api
+ * @inheritDoc
  */
-ol.control.ZoomSlider.render = function(mapEvent) {
+ol.control.ZoomSlider.prototype.handleMapPostrender = function(mapEvent) {
   if (goog.isNull(mapEvent.frameState)) {
     return;
   }

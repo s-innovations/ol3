@@ -29,9 +29,7 @@ ol.interaction.DragAndDrop = function(opt_options) {
 
   var options = goog.isDef(opt_options) ? opt_options : {};
 
-  goog.base(this, {
-    handleEvent: ol.interaction.DragAndDrop.handleEvent
-  });
+  goog.base(this);
 
   /**
    * @private
@@ -135,12 +133,10 @@ ol.interaction.DragAndDrop.prototype.handleResult_ = function(file, result) {
 
 
 /**
- * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
- * @return {boolean} `false` to stop event propagation.
- * @this {ol.interaction.DragAndDrop}
- * @api
+ * @inheritDoc
  */
-ol.interaction.DragAndDrop.handleEvent = goog.functions.TRUE;
+ol.interaction.DragAndDrop.prototype.handleMapBrowserEvent =
+    goog.functions.TRUE;
 
 
 /**
