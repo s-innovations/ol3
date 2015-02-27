@@ -184,7 +184,7 @@ virtual('todo', 'fixme')
 
 @target(NPM_INSTALL, 'package.json')
 def npm_install(t):
-    t.run('npm', 'install')
+    #t.run('npm', 'install')
     t.touch()
 
 

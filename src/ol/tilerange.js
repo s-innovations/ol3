@@ -41,7 +41,23 @@ ol.TileRange = function(minX, maxX, minY, maxY) {
 
 };
 
-
+/**
+ * @param {number} z Tile coordinate zoom lvl.
+ * @param {function(ol.TileCoord): boolean} func TileFunction to be called on each tilecoord.
+ * @api
+ */
+ol.TileRange.prototype.forEachTileCoordInRange = function(z,func)
+{
+  var tileCoord = [z,0,0];
+  for(var x = this.minX;x<=this.maxX;x++)
+    for(var y = this.minY;y<=this.maxY;y++)
+    {
+      tileCoord[1] = x;
+      tileCoord[2] = y;
+      if(func(tileCoord))
+        return;
+    }
+}
 /**
  * @param {...ol.TileCoord} var_args Tile coordinates.
  * @return {!ol.TileRange} Bounding tile box.
@@ -150,6 +166,7 @@ ol.TileRange.prototype.extend = function(tileRange) {
 
 /**
  * @return {number} Height.
+ * @api 
  */
 ol.TileRange.prototype.getHeight = function() {
   return this.maxY - this.minY + 1;
@@ -158,6 +175,7 @@ ol.TileRange.prototype.getHeight = function() {
 
 /**
  * @return {ol.Size} Size.
+ * @api
  */
 ol.TileRange.prototype.getSize = function() {
   return [this.getWidth(), this.getHeight()];
@@ -166,6 +184,7 @@ ol.TileRange.prototype.getSize = function() {
 
 /**
  * @return {number} Width.
+ * @api 
  */
 ol.TileRange.prototype.getWidth = function() {
   return this.maxX - this.minX + 1;
@@ -175,6 +194,7 @@ ol.TileRange.prototype.getWidth = function() {
 /**
  * @param {ol.TileRange} tileRange Tile range.
  * @return {boolean} Intersects.
+ * @api 
  */
 ol.TileRange.prototype.intersects = function(tileRange) {
   return this.minX <= tileRange.maxX &&

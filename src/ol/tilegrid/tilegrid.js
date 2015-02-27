@@ -215,6 +215,7 @@ ol.tilegrid.TileGrid.prototype.getTileCoordChildTileRange =
  * @param {ol.TileRange} tileRange Tile range.
  * @param {ol.Extent=} opt_extent Temporary ol.Extent object.
  * @return {ol.Extent} Extent.
+ * @api
  */
 ol.tilegrid.TileGrid.prototype.getTileRangeExtent =
     function(z, tileRange, opt_extent) {
@@ -234,6 +235,7 @@ ol.tilegrid.TileGrid.prototype.getTileRangeExtent =
  * @param {number} resolution Resolution.
  * @param {ol.TileRange=} opt_tileRange Temporary tile range object.
  * @return {ol.TileRange} Tile range.
+ * @api
  */
 ol.tilegrid.TileGrid.prototype.getTileRangeForExtentAndResolution =
     function(extent, resolution, opt_tileRange) {
@@ -254,6 +256,7 @@ ol.tilegrid.TileGrid.prototype.getTileRangeForExtentAndResolution =
  * @param {number} z Z.
  * @param {ol.TileRange=} opt_tileRange Temporary tile range object.
  * @return {ol.TileRange} Tile range.
+ * @api
  */
 ol.tilegrid.TileGrid.prototype.getTileRangeForExtentAndZ =
     function(extent, z, opt_tileRange) {
@@ -266,6 +269,7 @@ ol.tilegrid.TileGrid.prototype.getTileRangeForExtentAndZ =
 /**
  * @param {ol.TileCoord} tileCoord Tile coordinate.
  * @return {ol.Coordinate} Tile center.
+ * @api 
  */
 ol.tilegrid.TileGrid.prototype.getTileCoordCenter = function(tileCoord) {
   var origin = this.getOrigin(tileCoord[0]);
@@ -282,6 +286,7 @@ ol.tilegrid.TileGrid.prototype.getTileCoordCenter = function(tileCoord) {
  * @param {ol.TileCoord} tileCoord Tile coordinate.
  * @param {ol.Extent=} opt_extent Temporary extent object.
  * @return {ol.Extent} Extent.
+ * @api
  */
 ol.tilegrid.TileGrid.prototype.getTileCoordExtent =
     function(tileCoord, opt_extent) {
@@ -313,6 +318,19 @@ ol.tilegrid.TileGrid.prototype.getTileCoordForCoordAndResolution = function(
       coordinate[0], coordinate[1], resolution, false, opt_tileCoord);
 };
 
+
+/**
+ * Get scale for given resolution
+ *
+ * @param {number} resolution Resolution.
+ * @return {number} Scale
+ * @api stable
+ */
+ol.tilegrid.TileGrid.prototype.getScaleForResolution = function(
+  resolution) {
+  var z = this.getZForResolution(resolution);
+  return resolution / this.getResolution(z);
+};
 
 /**
  * @param {number} x X.
@@ -365,6 +383,7 @@ ol.tilegrid.TileGrid.prototype.getTileCoordForCoordAndZ =
 /**
  * @param {ol.TileCoord} tileCoord Tile coordinate.
  * @return {number} Tile resolution.
+ * @api
  */
 ol.tilegrid.TileGrid.prototype.getTileCoordResolution = function(tileCoord) {
   goog.asserts.assert(
@@ -392,6 +411,7 @@ ol.tilegrid.TileGrid.prototype.getTileSize = function(z) {
 /**
  * @param {number} resolution Resolution.
  * @return {number} Z.
+ * @api stable
  */
 ol.tilegrid.TileGrid.prototype.getZForResolution = function(resolution) {
   return ol.array.linearFindNearest(this.resolutions_, resolution, 0);
